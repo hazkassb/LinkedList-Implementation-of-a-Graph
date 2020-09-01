@@ -1,7 +1,11 @@
 package adjListGraph;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
+import java.util.Stack;
 
 
 
@@ -9,7 +13,7 @@ class Graph{
 	
 	//	Edge object
 	class Edge{
-		int v; double w;	//vertex and weight
+		int v; double w;	//destination vertex and weight of the edge
 		
 		// Constructor
 		public Edge(int v, double w) {
@@ -17,7 +21,7 @@ class Graph{
 			this.w = w;
 		}
 		
-		//Edge toString methof
+		//Edge toString method
 		@Override
 		public String toString() {
 			return "(v:" + this.v + ", w:" + this.w +")";
@@ -40,11 +44,12 @@ class Graph{
 	//Add a new edge into the graph: u = start vertex, v = end vertex, w = edge weight
 	public void addEdge(int u, int v, double w) {
 		G[u].add(0, new Edge(v, w));
+		G[v].add(0, new Edge(u, w));
 	}
 	
 	
 	
-	//Graph toString methof
+	//Graph toString method
 	@Override
 	public String toString() {
 		String result = "";
@@ -54,6 +59,90 @@ class Graph{
 		
 		return result;
 	}
+	
+//	DEPTH-FIRST SEARCH
+	public boolean hasPathDFS(int src, int dest) {
+		Set<Integer> visited = new HashSet<>();
+		
+		 return hasPathDFS(src, dest, visited);
+	}
+
+	private boolean hasPathDFS(int src, int dest, Set<Integer> visited) {
+		if(visited.contains(src)) {
+			return false;
+		}
+		if(src == dest){
+			return true;
+		}
+
+		
+		Stack<Integer> st = new Stack<>();
+		
+		visited.add(src);
+		st.push(src);
+				
+		while(!st.isEmpty()) {
+			int curr_node = st.pop();
+			
+			List<Edge> childList = G[curr_node];
+			
+			for(Edge edge : childList) {
+				if(!visited.contains(edge.v)) {
+					st.push(edge.v);
+					visited.add(edge.v);
+					if(edge.v == dest) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		
+		return false;
+	}
+	
+	
+	
+//	BREADTH-FIRST SEARCH
+	public boolean hasPathBFS(int src, int dest) {
+		Set<Integer> visited = new HashSet<>();
+		
+		return hasPathBFS(src, dest, visited);
+	}
+
+	
+	private boolean hasPathBFS(int src, int dest, Set<Integer> visited) {
+		if(visited.contains(src)) {
+			return false;
+		}
+		if(src == dest) {
+			return true;
+		}
+		
+		Queue<Integer> q = new LinkedList<>();
+		
+		q.offer(src);
+		visited.add(src);
+		
+		while(!q.isEmpty()) {
+			int curr_node = q.poll();
+			List<Edge> childList = G[curr_node];
+			
+			for(Edge edge : childList) {
+				if(!visited.contains(edge.v)) {
+					visited.add(edge.v);
+					q.offer(edge.v);
+					if(dest == edge.v) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	
 }
 
 
@@ -84,23 +173,23 @@ public class ListGraph {
 		
 		
 		Graph g = new Graph(10);
+		g.addEdge(0, 1, 1.0);
 		g.addEdge(0, 2, 1.0);
-		g.addEdge(0, 5, 1.0);
-		g.addEdge(2, 9, 15.0);
-		g.addEdge(9, 2, 1.0);
-		g.addEdge(1, 2, 1.0);
-		g.addEdge(1, 5, 1.0);
-		g.addEdge(3, 9, 15.0);
-		g.addEdge(5, 2, 1.0);
-		g.addEdge(4, 2, 1.0);
-		g.addEdge(7, 5, 1.0);
-		g.addEdge(7, 9, 15.0);
-		g.addEdge(9, 2, 1.0);
+		g.addEdge(1, 3, 15.0);
+		g.addEdge(2, 4, 1.0);
+		g.addEdge(3, 5, 1.0);
+		g.addEdge(4, 5, 1.0);
+		g.addEdge(4, 6, 15.0);
+		g.addEdge(9, 7, 1.0);
 
+		System.out.println(g.hasPathDFS(1, 9));
+		
+		System.out.println(g.hasPathBFS(1, 9));
+		
+		System.out.println(g.hasPathBFS(1, 6));
 		
 		
-		
-		System.out.println(g);
+//		System.out.println(g);
 	}
 
 }
